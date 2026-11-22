@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- CUSTOM STYLING FOR EXECUTIVE LOOK & CENTERED TABLE NUMBERS ---
+# --- CUSTOM STYLING FOR EXECUTIVE LOOK, AUTO-WIDTH TABLES & TAKEAWAYS ---
 st.markdown("""
     <style>
     .block-container {padding-top: 2rem; padding-bottom: 2rem;}
@@ -19,16 +19,40 @@ st.markdown("""
         padding: 15px 20px;
         border-radius: 10px;
     }
-    /* Center-align numeric cells and short columns in tables */
-    [data-testid="stDataFrame"] div[data-testid="stTable"] td,
-    [data-testid="stDataFrame"] div[data-testid="stTable"] th {
+    /* Clean, auto-width centered tables without stretched whitespace */
+    .centered-audit-table {
+        width: auto;
+        min-width: 65%;
+        border-collapse: collapse;
+        margin: 15px auto;
+        font-size: 14px;
+        background-color: #161B22;
+        color: #C9D1D9;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .centered-audit-table th, .centered-audit-table td {
+        border: 1px solid #30363D;
+        padding: 10px 18px;
         text-align: center !important;
     }
-    /* Universal Pandas Styler / DataFrame cell centering for numbers */
-    table.dataframe td:nth-child(2), 
-    table.dataframe td:nth-child(3),
-    table.dataframe td:nth-child(4) {
-        text-align: center !important;
+    .centered-audit-table th {
+        background-color: #21262D;
+        font-weight: 600;
+        color: #F0F6FC;
+    }
+    .centered-audit-table tr:nth-child(even) {
+        background-color: #111418;
+    }
+    /* Executive Takeaways Banner */
+    .takeaway-box {
+        background: linear-gradient(135deg, #161B22 0%, #21262D 100%);
+        border-left: 4px solid #2ea043;
+        padding: 16px 20px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        color: #F0F6FC;
+        font-size: 15px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -39,6 +63,16 @@ st.markdown(
     "**ISO 14067 & GHG Protocol (Categories 1, 4, 5, 9)** | "
     "Cradle-to-Customer Product Carbon Footprint Model for E-Commerce Beverage Fulfillment"
 )
+
+# --- EXECUTIVE TAKEAWAYS BANNER (Immediate hiring manager value) ---
+st.markdown("""
+<div class="takeaway-box">
+    <strong>🎯 Executive Takeaways for Hiring Managers:</strong><br>
+    • <strong>Bottom-Up Primary Data:</strong> Bypasses generic secondary estimates by integrating physical box geometry[cite: 7] and gravimetric tape roll audits (151g net PP)[cite: 8, 9].<br>
+    • <strong>Regulatory Alignment:</strong> Fully structured for <strong>CSRD / ESRS E1</strong> mandatory disclosure and ISO 14067 life cycle verification.<br>
+    • <strong>Actionable Mitigation:</strong> Demonstrates how packaging variant selection and freight efficiency directly govern Scope 3 reduction targets.
+</div>
+""", unsafe_allow_html=True)
 
 # --- 1. CONSTANTS: EMISSION FACTORS (kg CO2e per unit) ---
 VDW_PROBAS_CORRUGATED_EF = 0.491
@@ -231,19 +265,15 @@ with tab1:
 
     st.subheader("CSRD ESRS E1 Audit Breakdown")
     
-    # Styled dataframe with centered numeric column
-    st.dataframe(
-        df_audit.style.set_properties(**{'text-align': 'center'}, subset=['Emissions (kg CO2e)']),
-        use_container_width=True,
-        hide_index=True
-    )
+    # Render with centered, auto-width HTML table
+    st.markdown(df_audit.to_html(index=False, classes="centered-audit-table", float_format=lambda x: f"{x:.4f}"), unsafe_allow_html=True)
 
     csv_data = df_audit.to_csv(index=False).encode("utf-8")
     st.download_button(
         label="⬇️ Download CSRD Audit Report (CSV)",
         data=csv_data,
         file_name=f"scope3_pcf_{order_type}_audit.csv",
-        mime="text/css" if False else "text/csv",
+        mime="text/csv",
         use_container_width=True
     )
 
@@ -307,9 +337,5 @@ with tab3:
         {"Parameter": "Outbound Parcel Delivery (DHL GoGreen)", "Scope 3 Cat.": "Cat. 9", "Value": DHL_GOGREEN_NET_EF, "Unit": "kg CO₂e / order", "Source": "DHL GoGreen Certified"}
     ])
     
-    # Styled dataframe with centered numeric and unit columns
-    st.dataframe(
-        ef_table.style.set_properties(**{'text-align': 'center'}, subset=['Scope 3 Cat.', 'Value', 'Unit']),
-        use_container_width=True,
-        hide_index=True
-    )
+    # Render with centered, auto-width HTML table
+    st.markdown(ef_table.to_html(index=False, classes="centered-audit-table"), unsafe_allow_html=True)
