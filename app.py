@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- CUSTOM STYLING FOR CLEAN EXECUTIVE LOOK ---
+# --- CUSTOM STYLING FOR EXECUTIVE LOOK & CENTERED TABLE NUMBERS ---
 st.markdown("""
     <style>
     .block-container {padding-top: 2rem; padding-bottom: 2rem;}
@@ -18,6 +18,17 @@ st.markdown("""
         border: 1px solid #30363D;
         padding: 15px 20px;
         border-radius: 10px;
+    }
+    /* Center-align numeric cells and short columns in tables */
+    [data-testid="stDataFrame"] div[data-testid="stTable"] td,
+    [data-testid="stDataFrame"] div[data-testid="stTable"] th {
+        text-align: center !important;
+    }
+    /* Universal Pandas Styler / DataFrame cell centering for numbers */
+    table.dataframe td:nth-child(2), 
+    table.dataframe td:nth-child(3),
+    table.dataframe td:nth-child(4) {
+        text-align: center !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -219,14 +230,20 @@ with tab1:
         st.plotly_chart(fig_ops, use_container_width=True)
 
     st.subheader("CSRD ESRS E1 Audit Breakdown")
-    st.dataframe(df_audit, use_container_width=True, hide_index=True)
+    
+    # Styled dataframe with centered numeric column
+    st.dataframe(
+        df_audit.style.set_properties(**{'text-align': 'center'}, subset=['Emissions (kg CO2e)']),
+        use_container_width=True,
+        hide_index=True
+    )
 
     csv_data = df_audit.to_csv(index=False).encode("utf-8")
     st.download_button(
         label="⬇️ Download CSRD Audit Report (CSV)",
         data=csv_data,
         file_name=f"scope3_pcf_{order_type}_audit.csv",
-        mime="text/csv",
+        mime="text/css" if False else "text/csv",
         use_container_width=True
     )
 
@@ -289,4 +306,10 @@ with tab3:
         {"Parameter": "Commercial Packing Waste Incineration", "Scope 3 Cat.": "Cat. 5", "Value": PROBAS_WASTE_INCINERATION_EF, "Unit": "kg CO₂e / kg", "Source": "UBA ProBas"},
         {"Parameter": "Outbound Parcel Delivery (DHL GoGreen)", "Scope 3 Cat.": "Cat. 9", "Value": DHL_GOGREEN_NET_EF, "Unit": "kg CO₂e / order", "Source": "DHL GoGreen Certified"}
     ])
-    st.dataframe(ef_table, use_container_width=True, hide_index=True)
+    
+    # Styled dataframe with centered numeric and unit columns
+    st.dataframe(
+        ef_table.style.set_properties(**{'text-align': 'center'}, subset=['Scope 3 Cat.', 'Value', 'Unit']),
+        use_container_width=True,
+        hide_index=True
+    )
