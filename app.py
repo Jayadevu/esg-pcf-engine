@@ -337,4 +337,197 @@ with tab1:
     fig_sankey.update_layout(
         height=340,
         margin=dict(t=15, b=15, l=15, r=15),
-        paper_bgcolor="rgba(0,0,0,
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#F9FAFB", size=12)
+    )
+    st.plotly_chart(fig_sankey, use_container_width=True)
+
+    st.divider()
+
+    # --- DUAL CHARTS ---
+    chart_col1, chart_col2 = st.columns(2)
+
+    with chart_col1:
+        st.subheader("2. Controllable Operational Hotspots")
+        df_ops = pd.DataFrame({
+            "Operational Driver": [
+                "Corrugated Box & Inserts",
+                "Inbound HGV Transport",
+                "PP Adhesive Tape",
+                "Labels & Hazard Stickers",
+                "Packing Waste Incineration"
+            ],
+            "kg CO2e": [
+                res['sub_cardboard'],
+                res['cat4_inbound'],
+                res['sub_tape'],
+                res['sub_labels'],
+                res['cat5_waste']
+            ]
+        })
+        fig_ops = px.bar(
+            df_ops,
+            x="kg CO2e",
+            y="Operational Driver",
+            orientation="h",
+            text_auto=".4f",
+            color="kg CO2e",
+            color_continuous_scale="Emrld"
+        )
+        fig_ops.update_layout(
+            margin=dict(t=10, b=10, l=10, r=10),
+            yaxis=dict(autorange="reversed"),
+            coloraxis_showscale=False,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
+        st.plotly_chart(fig_ops, use_container_width=True)
+
+    with chart_col2:
+        st.subheader("3. Batch Size Efficiency (Ops CO₂e / Bottle)")
+        comp_rows = []
+        for v in ["6-bottle", "12-bottle", "18-bottle"]:
+            r = calculate_full_scope3_pcf(v, custom_distance, enable_gogreen, bottle_system)
+            comp_rows.append({
+                "Carton Size": v.upper(),
+                "Ops Emissions per Bottle (kg CO₂e)": r["ops_per_bottle"],
+                "Highlight": "Selected" if v == order_type else "Alternative"
+            })
+        df_comp = pd.DataFrame(comp_rows)
+        fig_comp = px.bar(
+            df_comp,
+            x="Carton Size",
+            y="Ops Emissions per Bottle (kg CO₂e)",
+            text_auto=".4f",
+            color="Highlight",
+            color_discrete_map={"Selected": "#10B981", "Alternative": "#374151"}
+        )
+        fig_comp.update_layout(
+            margin=dict(t=10, b=10, l=10, r=10),
+            showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
+        st.plotly_chart(fig_comp, use_container_width=True)
+
+    st.subheader("CSRD ESRS E1 Audit Breakdown")
+    df_audit = pd.DataFrame({
+        "Scope 3 Category": [
+            "Cat. 1: Product (Beer & Glass)",
+            "Cat. 1: Packaging Materials",
+            "Cat. 4: Inbound Freight (HGV)",
+            "Cat. 5: Operational Waste",
+            "Cat. 9: Outbound Freight (DHL)"
+        ],
+        "Emissions (kg CO2e)": [
+            res['cat1_product'],
+            res['cat1_packaging'],
+            res['cat4_inbound'],
+            res['cat5_waste'],
+            res['cat9_outbound']
+        ],
+        "Share of Total (%)": [
+            f"{(res['cat1_product'] / res['total_co2e']) * 100:.2f}%",
+            f"{(res['cat1_packaging'] / res['total_co2e']) * 100:.2f}%",
+            f"{(res['cat4_inbound'] / res['total_co2e']) * 100:.2f}%",
+            f"{(res['cat5_waste'] / res['total_co2e']) * 100:.2f}%",
+            f"{(res['cat9_outbound'] / res['total_co2e']) * 100:.2f}%"
+        ]
+    })
+
+    st.markdown(
+        df_audit.to_html(index=False, classes="centered-audit-table", float_format=lambda x: f"{x:.4f}"),
+        unsafe_allow_html=True
+    )
+
+    csv_data = df_audit.to_csv(index=False).encode("utf-8")
+    st.download_button(
+        label="⬇️ Download CSRD Audit Ledger (CSV)",
+        data=csv_data,
+        file_name=f"scope3_pcf_{order_type}_audit.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
+
+# ==============================================================================
+# TAB 2: ENGINEERING PROCESS & LCA METHODOLOGY
+# ==============================================================================
+with tab2:
+    st.subheader("End-to-End ISO 14067 & GHG Protocol Engineering Workflow")
+    st.markdown(
+        "Engineered from bottom-up **primary operational data** collected directly on the warehouse floor, "
+        "following the four-phase Life Cycle Assessment (LCA) framework:"
+    )
+
+    p1, p2, p3, p4 = st.columns(4)
+    with p1:
+        st.info("### 1. Goal & Scope\n**System Boundary:** Cradle-to-Customer.\n\n**Functional Unit:** 1 fulfilled e-commerce order (6, 12, or 18 × 0.5L bottles) aligned with **GHG Protocol Scope 3**.")
+    with p2:
+        st.info("### 2. Primary LCI Data\n**Empirical Collection:** Physical dimensioning of cartons and digital scale gravimetric testing of tape rolls (183g gross − 32g core = **151g net PP**).")
+    with p3:
+        st.info("### 3. Secondary EF Mapping\n**German LCI Databases:** Activity mass & tonne-kilometers mapped to verified German factors (**UBA ProBas**, **VDW**, and **Ecoinvent**).")
+    with p4:
+        st.info("### 4. Impact Aggregation\n**CSRD / ESRS E1 Output:** Automated category aggregation (Cat. 1, 4, 5, 9), hotspot identification, and audit-ready CSV reporting.")
+
+    st.divider()
+
+    st.subheader("⚖️ CSRD / ESRS E1 Compliance Mapping & Strategic Recommendations")
+    st.markdown("""
+    Under the **Corporate Sustainability Reporting Directive (CSRD)** and European Standard **ESRS E1 (Climate Change)**, companies must transparently report greenhouse gas emissions across their value chain. This tool maps directly to mandatory disclosures:
+    - **ESRS E1-6 (Scope 3 Emissions):** Automatically segregates and calculates gross upstream and downstream emissions across Categories 1 (Purchased Goods), 4 (Upstream Transport), 5 (Operational Waste), and 9 (Downstream Distribution).
+    
+    ### 🎯 Actionable Decarbonization Recommendations for Leadership:
+    1. **Prioritize Supplier Engagement (Cat. 1):** Because container glass and brewing account for the bulk of upstream intensity, distributors must partner with regional breweries utilizing biogas/green hydrogen rather than focusing solely on warehouse tape or box weights.
+    2. **Enforce Circular *Mehrweg* Pools:** Leveraging Germany's returnable glass pool amortizes container manufacturing across 30 cycles, preventing massive carbon inflation compared to single-use (*Einweg*) systems.
+    3. **Optimize Carton Density:** Scaling from 6-bottle to 18-bottle configurations significantly reduces packaging emissions per bottle delivered, optimizing transport efficiency (tkm).
+    """)
+
+    st.divider()
+
+    st.subheader("Advanced LCA Allocation: The German Pfand (Mehrweg) System")
+    st.markdown("""
+    - **Allocation Methodology (ISO 14044):** Standard cradle-to-gate databases assign 100% of container glass production to a single use. By accounting for Germany's **Mehrweg pool infrastructure**, glass bottles are modeled across an average of **30 rotation cycles**, radically shifting product footprint attribution.
+    - **Strategic Distributor Takeaway:** Toggling between *Einweg* and *Mehrweg* proves that direct warehouse packaging operations (boxes, tape) represent the primary direct control levers for a distributor, whereas product-level carbon is governed by circular packaging pools and reverse logistics.
+    """)
+
+    st.divider()
+
+    st.subheader("Mathematical Formulation (First-Principles Model)")
+    f_col1, f_col2 = st.columns(2)
+
+    with f_col1:
+        st.markdown("**1. Category 1 — Purchased Goods & Packaging ($E_{\\text{Cat1}}$):**")
+        st.latex(r"E_{\text{pack}} = (m_{\text{box}} + n_{\text{ins}} \cdot m_{\text{ins}}) \cdot EF_{\text{VDW}} + m_{\text{tape}} \cdot EF_{\text{PP}} + m_{\text{lbl}} \cdot EF_{\text{lbl}}")
+        st.latex(r"E_{\text{prod}} = N_{\text{bottles}} \cdot \left( \left(\frac{m_{\text{glass}}}{N_{\text{rotations}}}\right) \cdot EF_{\text{UBA}} + V_{\text{beer}} \cdot EF_{\text{brew}} \right)")
+
+    with f_col2:
+        st.markdown("**2. Categories 4, 5 & 9 — Logistics & End-of-Life ($E_{\\text{Log}}$):**")
+        st.latex(r"E_{\text{Cat4}} = \left( \frac{N_{\text{bottles}} \cdot (m_{\text{glass}} + m_{\text{beer}})}{1000} \cdot d_{\text{inbound}} \right) \cdot EF_{\text{HGV}}")
+        st.latex(r"E_{\text{Cat5}} = m_{\text{waste}} \cdot EF_{\text{incin}}, \quad E_{\text{Cat9}} = 0 \text{ (DHL GoGreen)}")
+
+    st.divider()
+
+    st.subheader("Empirical Warehouse Data Collection Log")
+    st.markdown("""
+    - **Carton Geometry & Mass:** Measured external dimensions ($29\\times21\\times34\\text{ cm}$, $41\\times29\\times34\\text{ cm}$, $60\\times29\\times34\\text{ cm}$) and weighed outer boxes ($0.38\\text{ kg}$, $0.79\\text{ kg}$, $0.85\\text{ kg}$) plus modular corrugated dividers ($0.15\\text{ kg/module}$).
+    - **Consumable Gravimetric Audit:** Weighed full commercial packaging tape roll ($183\\text{ g}$) vs. spent cardboard core ($32\\text{ g}$) to isolate **$151\\text{ g}$ net polypropylene film** per roll, allocating $15\\text{ g}$, $20\\text{ g}$, and $30\\text{ g}$ per box size.
+    - **Inbound Logistics Modeling:** Calculated tonne-kilometers ($\\text{tkm}$) from brewery origin (Coburg, $75\\text{ km}$) using diesel HGV emission factors before applying DHL GoGreen net-zero outbound accounting.
+    """)
+
+# ==============================================================================
+# TAB 3: EMISSION FACTOR REGISTRY
+# ==============================================================================
+with tab3:
+    st.subheader("Verified Emission Factor & Activity Registry")
+    ef_table = pd.DataFrame([
+        {"Parameter": "Corrugated Cardboard (Box & Inserts)", "Scope 3 Cat.": "Cat. 1", "Value": VDW_PROBAS_CORRUGATED_EF, "Unit": "kg CO₂e / kg", "Source": "VDW / UBA ProBas"},
+        {"Parameter": "Container Glass (0.5L Bottle)", "Scope 3 Cat.": "Cat. 1", "Value": UBA_PROBAS_GLASS_EF, "Unit": "kg CO₂e / kg", "Source": "UBA ProBas"},
+        {"Parameter": "Brewing Process (0.5L Liquid)", "Scope 3 Cat.": "Cat. 1", "Value": ECOINVENT_BREWING_EF, "Unit": "kg CO₂e / L", "Source": "Ecoinvent v3"},
+        {"Parameter": "Polypropylene Packaging Tape", "Scope 3 Cat.": "Cat. 1", "Value": PROBAS_PLASTIC_TAPE_EF, "Unit": "kg CO₂e / kg", "Source": "UBA ProBas"},
+        {"Parameter": "Thermal & Hazard Adhesive Labels", "Scope 3 Cat.": "Cat. 1", "Value": PROBAS_ADHESIVE_LABEL_EF, "Unit": "kg CO₂e / kg", "Source": "UBA ProBas"},
+        {"Parameter": "Inbound Diesel HGV Freight", "Scope 3 Cat.": "Cat. 4", "Value": HGV_DIESEL_TONNE_KM_EF, "Unit": "kg CO₂e / tkm", "Source": "UBA ProBas / TREMOD"},
+        {"Parameter": "Commercial Packing Waste Incineration", "Scope 3 Cat.": "Cat. 5", "Value": PROBAS_WASTE_INCINERATION_EF, "Unit": "kg CO₂e / kg", "Source": "UBA ProBas"},
+        {"Parameter": "Outbound Parcel Delivery (DHL GoGreen)", "Scope 3 Cat.": "Cat. 9", "Value": DHL_GOGREEN_NET_EF, "Unit": "kg CO₂e / order", "Source": "DHL GoGreen Certified"}
+    ])
+
+    st.markdown(ef_table.to_html(index=False, classes="centered-audit-table"), unsafe_allow_html=True)
