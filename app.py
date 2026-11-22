@@ -75,6 +75,40 @@ st.markdown("""
     .centered-audit-table tr:nth-child(even) {
         background-color: #0F172A;
     }
+
+    /* High-Visibility Pill Navigation Tabs */
+    div[data-testid="stTabs"] [data-baseweb="tab-list"] {
+        gap: 12px;
+        background-color: #111827;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid #374151;
+        margin-bottom: 18px;
+    }
+    div[data-testid="stTabs"] button[data-baseweb="tab"] {
+        background-color: #1F2937;
+        color: #E5E7EB;
+        border: 1px solid #4B5563;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease;
+    }
+    div[data-testid="stTabs"] button[data-baseweb="tab"]:hover {
+        background-color: #374151;
+        border-color: #10B981;
+        color: #FFFFFF;
+    }
+    div[data-testid="stTabs"] button[aria-selected="true"] {
+        background: linear-gradient(135deg, #059669 0%, #10B981 100%) !important;
+        color: #0B0F19 !important;
+        border-color: #34D399 !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+    }
+    div[data-testid="stTabs"] [data-baseweb="tab-highlight"] {
+        display: none;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -437,7 +471,6 @@ with tab2:
 
     st.divider()
 
-    # --- NEW: CSRD / ESRS E1 REGULATORY MAPPING & STRATEGIC RECOMMENDATIONS ---
     st.subheader("⚖️ CSRD / ESRS E1 Compliance Mapping & Strategic Recommendations")
     st.markdown("""
     Under the **Corporate Sustainability Reporting Directive (CSRD)** and European Standard **ESRS E1 (Climate Change)**, companies must transparently report greenhouse gas emissions across their value chain. This tool maps directly to mandatory disclosures:
