@@ -4,73 +4,92 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 st.set_page_config(
-    page_title="Scope 3 Packaging PCF Engine (CSRD ESRS E1)",
+    page_title="Scope 3 Packaging PCF Engine | CSRD ESRS E1",
+    page_icon="🌱",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# --- CUSTOM STYLING FOR EXECUTIVE LOOK, AUTO-WIDTH TABLES & TAKEAWAYS ---
+# --- CUSTOM EXECUTIVE SaaS STYLING ---
 st.markdown("""
     <style>
-    .block-container {padding-top: 2rem; padding-bottom: 2rem;}
+    .block-container {padding-top: 1.8rem; padding-bottom: 2.5rem;}
+    
+    /* Sleek KPI Cards with Emerald Top Accent */
     div[data-testid="stMetric"] {
-        background-color: #161B22;
-        border: 1px solid #30363D;
-        padding: 15px 20px;
+        background: linear-gradient(180deg, #161E2E 0%, #111827 100%);
+        border: 1px solid #1F2937;
+        border-top: 3px solid #10B981;
+        padding: 16px 20px;
         border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
-    /* Clean, auto-width centered tables without stretched whitespace */
+    
+    /* Hero Banner */
+    .hero-banner {
+        background: linear-gradient(135deg, #064E3B 0%, #111827 65%, #1E293B 100%);
+        border: 1px solid #059669;
+        padding: 20px 24px;
+        border-radius: 12px;
+        margin-bottom: 22px;
+        color: #F9FAFB;
+    }
+    .hero-banner h3 {
+        margin: 0 0 8px 0;
+        color: #34D399;
+        font-size: 18px;
+    }
+    .hero-banner p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #E5E7EB;
+    }
+
+    /* Clean Auto-Width Centered Audit Tables */
     .centered-audit-table {
         width: auto;
-        min-width: 65%;
+        min-width: 70%;
         border-collapse: collapse;
         margin: 15px auto;
         font-size: 14px;
-        background-color: #161B22;
-        color: #C9D1D9;
+        background-color: #111827;
+        color: #E5E7EB;
         border-radius: 8px;
         overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
     .centered-audit-table th, .centered-audit-table td {
-        border: 1px solid #30363D;
-        padding: 10px 18px;
+        border: 1px solid #1F2937;
+        padding: 11px 20px;
         text-align: center !important;
     }
     .centered-audit-table th {
-        background-color: #21262D;
+        background-color: #1F2937;
         font-weight: 600;
-        color: #F0F6FC;
+        color: #34D399;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.05em;
     }
     .centered-audit-table tr:nth-child(even) {
-        background-color: #111418;
-    }
-    /* Executive Takeaways Banner */
-    .takeaway-box {
-        background: linear-gradient(135deg, #161B22 0%, #21262D 100%);
-        border-left: 4px solid #2ea043;
-        padding: 16px 20px;
-        border-radius: 6px;
-        margin-bottom: 25px;
-        color: #F0F6FC;
-        font-size: 15px;
+        background-color: #0F172A;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- HEADER ---
-st.title("Scope 3 Logistics & Packaging PCF Engine")
-st.markdown(
-    "**ISO 14067 & GHG Protocol (Categories 1, 4, 5, 9)** | "
-    "Cradle-to-Customer Product Carbon Footprint Model for E-Commerce Beverage Fulfillment"
-)
+# --- HEADER & HERO TAKEAWAY ---
+st.title("🌱 Scope 3 Logistics & Packaging PCF Engine")
+st.caption("ISO 14067 & GHG Protocol (Categories 1, 4, 5, 9) • Cradle-to-Customer Carbon Intelligence for Beverage Fulfillment")
 
-# --- EXECUTIVE TAKEAWAYS BANNER ---
 st.markdown("""
-<div class="takeaway-box">
-    <strong>🎯 Executive Takeaways for Hiring Managers:</strong><br>
-    • <strong>Bottom-Up Primary Data:</strong> Bypasses generic secondary estimates by integrating physical box geometry[cite: 7] and gravimetric tape roll audits (151g net PP)[cite: 8, 9].<br>
-    • <strong>German Pfand (Mehrweg) Integration:</strong> Amortizes container glass manufacturing across 30 rotation cycles, reflecting real-world circular infrastructure.<br>
-    • <strong>Regulatory Alignment:</strong> Fully structured for <strong>CSRD / ESRS E1</strong> mandatory disclosure and ISO 14067 life cycle verification.
+<div class="hero-banner">
+    <h3>Executive Summary & Engineering Highlights</h3>
+    <p>
+        • <strong>Bottom-Up Primary LCI:</strong> Built from direct warehouse carton dimensioning and gravimetric tape audits (151g net PP film/roll) rather than generic spend-based estimates.<br>
+        • <strong>German Pfand (Mehrweg) Circular Modeling:</strong> Dynamically amortizes container glass manufacturing across 30 reuse rotations vs. single-use (<em>Einweg</em>) baselines.<br>
+        • <strong>CSRD / ESRS E1 Audit-Ready:</strong> Maps operational drivers directly to GHG Protocol Scope 3 categories with one-click audit ledger exports.
+    </p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -80,11 +99,11 @@ UBA_PROBAS_GLASS_EF = 0.85
 ECOINVENT_BREWING_EF = 0.70
 PROBAS_PLASTIC_TAPE_EF = 1.95
 PROBAS_ADHESIVE_LABEL_EF = 1.15
-PROBAS_WASTE_INCINERATION_EF = 0.33  # Cat 5: Mixed commercial waste incineration
-HGV_DIESEL_TONNE_KM_EF = 0.111       # Cat 4: HGV Diesel Truck (per tonne-kilometer)
-DHL_GOGREEN_NET_EF = 0.0             # Cat 9: DHL GoGreen certified net-zero delivery
+PROBAS_WASTE_INCINERATION_EF = 0.33
+HGV_DIESEL_TONNE_KM_EF = 0.111
+DHL_GOGREEN_NET_EF = 0.0
 
-# --- 2. EMPIRICAL ACTIVITY DATA (Measured & Operational) ---
+# --- 2. EMPIRICAL ACTIVITY DATA ---
 DISTANCE_COBURG_INBOUND_KM = 75
 
 BOX_DIMENSIONS = {
@@ -109,14 +128,13 @@ WEIGHTS = {
 }
 
 # --- 3. SIDEBAR: INTERACTIVE SCENARIO CONTROLS ---
-st.sidebar.header("Scenario Parameters")
+st.sidebar.header("⚙️ Scenario Parameters")
 order_type = st.sidebar.selectbox("Packaging Variant", ["6-bottle", "12-bottle", "18-bottle"], index=2)
-st.sidebar.caption(f"Measured Geometry: **{BOX_DIMENSIONS[order_type]}**")
+st.sidebar.caption(f"Measured Carton: **{BOX_DIMENSIONS[order_type]}**")
 
-# Pfand & Bottle System Toggle
 bottle_system = st.sidebar.radio(
-    "Glass Lifecycle System", 
-    ["Reusable (Mehrweg - 30x Avg Cycles)", "Single-Use (Einweg - 1x Cycle)"],
+    "Glass Lifecycle System (Pfand)",
+    ["Reusable (Mehrweg - 30x Cycles)", "Single-Use (Einweg - 1x Cycle)"],
     index=0
 )
 
@@ -125,56 +143,53 @@ custom_distance = st.sidebar.slider("Inbound Brewery Distance (km)", 20, 300, DI
 enable_gogreen = st.sidebar.toggle("DHL GoGreen Outbound Offset (Cat. 9)", value=True)
 
 st.sidebar.divider()
-st.sidebar.info(
-    "**Methodology Standard:**\n"
+st.sidebar.success(
+    "**Compliance Boundaries:**\n"
     "• GHG Protocol Scope 3\n"
-    "• CSRD / ESRS E1 Ready\n"
+    "• CSRD / ESRS E1 Aligned\n"
     "• ISO 14067 System Boundary"
 )
 
 # --- 4. CALCULATION ENGINE ---
-def calculate_full_scope3_pcf(order_type, distance_km, gogreen_active, system_choice):
-    if order_type == '6-bottle':
+def calculate_full_scope3_pcf(variant, distance_km, gogreen_active, system_choice):
+    if variant == '6-bottle':
         outer_box, inserts, bottles, tape = WEIGHTS["box_6_bottle"], 1, 6, WEIGHTS["tape_6_bottle_kg"]
-    elif order_type == '12-bottle':
+    elif variant == '12-bottle':
         outer_box, inserts, bottles, tape = WEIGHTS["box_12_bottle"], 2, 12, WEIGHTS["tape_12_bottle_kg"]
-    elif order_type == '18-bottle':
+    elif variant == '18-bottle':
         outer_box, inserts, bottles, tape = WEIGHTS["box_18_bottle"], 3, 18, WEIGHTS["tape_18_bottle_kg"]
     else:
         raise ValueError("Invalid configuration")
 
-    # Allocation multiplier based on Pfand system
-    if "Mehrweg" in system_choice:
-        glass_allocation_multiplier = 1.0 / 30.0  # Amortized across 30 average cycles
-    else:
-        glass_allocation_multiplier = 1.0        # Full burden for single-use
+    glass_multiplier = (1.0 / 30.0) if "Mehrweg" in system_choice else 1.0
 
-    # Category 1: Purchased Goods (Packaging + Beer)
+    # Category 1: Packaging
     cardboard_kg = outer_box + (inserts * WEIGHTS["insert_module"])
     co2_cardboard = cardboard_kg * VDW_PROBAS_CORRUGATED_EF
     co2_tape = tape * PROBAS_PLASTIC_TAPE_EF
     co2_labels = (WEIGHTS["hazard_sticker_kg"] + WEIGHTS["shipping_label_kg"]) * PROBAS_ADHESIVE_LABEL_EF
     packaging_pcf = co2_cardboard + co2_tape + co2_labels
 
-    # Product PCF with Amortized Glass Allocation
-    single_beer_pcf = (WEIGHTS["glass_bottle_05L_kg"] * UBA_PROBAS_GLASS_EF * glass_allocation_multiplier) + \
-                      (WEIGHTS["beer_liquid_volume_L"] * ECOINVENT_BREWING_EF)
-    product_pcf = single_beer_pcf * bottles
+    # Category 1: Product (Glass + Brewing)
+    co2_glass = (WEIGHTS["glass_bottle_05L_kg"] * UBA_PROBAS_GLASS_EF * glass_multiplier) * bottles
+    co2_liquid = (WEIGHTS["beer_liquid_volume_L"] * ECOINVENT_BREWING_EF) * bottles
+    product_pcf = co2_glass + co2_liquid
 
-    # Category 5: Operational Waste
+    # Category 5: Waste
     waste_pcf = WEIGHTS["packing_waste_kg"] * PROBAS_WASTE_INCINERATION_EF
 
-    # Category 4: Inbound Transport (Coburg to Warehouse)
+    # Category 4: Inbound Freight
     beer_weight_tonnes = ((WEIGHTS["glass_bottle_05L_kg"] + WEIGHTS["beer_liquid_volume_L"]) * bottles) / 1000.0
     inbound_tkm = beer_weight_tonnes * distance_km
     inbound_transport_pcf = inbound_tkm * HGV_DIESEL_TONNE_KM_EF
 
-    # Category 9: Outbound Transport (DHL to Customer)
+    # Category 9: Outbound Freight
     outbound_transport_pcf = DHL_GOGREEN_NET_EF if gogreen_active else 0.052
 
     total_order_pcf = packaging_pcf + product_pcf + waste_pcf + inbound_transport_pcf + outbound_transport_pcf
 
     return {
+        "bottles": bottles,
         "cat1_packaging": round(packaging_pcf, 4),
         "cat1_product": round(product_pcf, 4),
         "cat5_waste": round(waste_pcf, 4),
@@ -182,19 +197,22 @@ def calculate_full_scope3_pcf(order_type, distance_km, gogreen_active, system_ch
         "cat9_outbound": round(outbound_transport_pcf, 4),
         "total_co2e": round(total_order_pcf, 4),
         "per_bottle_co2e": round(total_order_pcf / bottles, 4),
+        "ops_per_bottle": round((packaging_pcf + waste_pcf + inbound_transport_pcf + outbound_transport_pcf) / bottles, 4),
         "sub_cardboard": round(co2_cardboard, 4),
         "sub_tape": round(co2_tape, 4),
         "sub_labels": round(co2_labels, 4),
-        "cardboard_kg": round(cardboard_kg, 3),
-        "inbound_tkm": round(inbound_tkm, 3)
+        "sub_glass": round(co2_glass, 4),
+        "sub_liquid": round(co2_liquid, 4)
     }
 
 res = calculate_full_scope3_pcf(order_type, custom_distance, enable_gogreen, bottle_system)
+einweg_baseline = calculate_full_scope3_pcf(order_type, custom_distance, enable_gogreen, "Single-Use (Einweg)")
+pfand_savings = round(einweg_baseline["total_co2e"] - res["total_co2e"], 4)
 annual_total_tonnes = (res['total_co2e'] * monthly_order_volume * 12) / 1000.0
 
 # --- NAVIGATION TABS ---
 tab1, tab2, tab3 = st.tabs([
-    "📊 Executive Dashboard & Simulator",
+    "📊 Executive Dashboard & Carbon Flow",
     "⚙️ Engineering Process & LCA Methodology",
     "📚 Emission Factor & LCI Registry"
 ])
@@ -204,47 +222,95 @@ tab1, tab2, tab3 = st.tabs([
 # ==============================================================================
 with tab1:
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Total Batch PCF", f"{res['total_co2e']} kg CO₂e", f"{res['per_bottle_co2e']} kg CO₂e / bottle")
-    col2.metric("Annualized Scope 3", f"{annual_total_tonnes:.2f} t CO₂e", f"{monthly_order_volume:,} orders / mo")
-    col3.metric("Product Share (Cat. 1)", f"{(res['cat1_product'] / res['total_co2e']) * 100:.1f}%", "Glass & Brewing")
-    col4.metric("Packaging & Logistics", f"{((res['total_co2e'] - res['cat1_product']) / res['total_co2e']) * 100:.1f}%", "Controllable Operations")
+    col1.metric(
+        "Total Batch PCF",
+        f"{res['total_co2e']} kg CO₂e",
+        f"{res['per_bottle_co2e']} kg CO₂e / bottle"
+    )
+    col2.metric(
+        "Annualized Scope 3",
+        f"{annual_total_tonnes:.2f} t CO₂e",
+        f"{monthly_order_volume:,} orders / mo"
+    )
+    col3.metric(
+        "Pfand Circular Savings",
+        f"-{pfand_savings:.3f} kg CO₂e",
+        "vs. Single-Use (Einweg)" if pfand_savings > 0 else "Einweg Baseline Active",
+        delta_color="normal"
+    )
+    col4.metric(
+        "Controllable Ops Share",
+        f"{((res['total_co2e'] - res['cat1_product']) / res['total_co2e']) * 100:.1f}%",
+        "Packaging & Freight"
+    )
 
     st.divider()
 
+    # --- SANKEY FLOW DIAGRAM (Visualizes entire Scope 3 system at a glance) ---
+    st.subheader("1. Cradle-to-Customer Carbon Flow (Sankey Allocation)")
+    
+    sankey_labels = [
+        "Brewing Liquid",            # 0
+        "Container Glass (Pfand)",   # 1
+        "Corrugated Cardboard",      # 2
+        "PP Tape & Labels",          # 3
+        "Inbound HGV Freight",       # 4
+        "Warehouse Waste",           # 5
+        "Outbound DHL Freight",      # 6
+        "Cat. 1: Product",           # 7
+        "Cat. 1: Packaging",         # 8
+        "Cat. 4, 5 & 9: Logistics",  # 9
+        f"Total Order PCF ({res['total_co2e']} kg)" # 10
+    ]
+
+    # Small floor value (0.0001) ensures zero-emission nodes like GoGreen still render cleanly
+    outbound_val = max(res['cat9_outbound'], 0.0001)
+
+    fig_sankey = go.Figure(data=[go.Sankey(
+        node=dict(
+            pad=18,
+            thickness=22,
+            line=dict(color="#1F2937", width=1),
+            label=sankey_labels,
+            color=[
+                "#34D399", "#6EE7B7", "#38BDF8", "#7DD3FC",
+                "#FBBF24", "#F87171", "#A78BFA",
+                "#10B981", "#0284C7", "#D97706", "#059669"
+            ]
+        ),
+        link=dict(
+            source=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+            target=[7, 7, 8, 8, 9, 9, 9, 10, 10, 10],
+            value=[
+                res['sub_liquid'],
+                max(res['sub_glass'], 0.0001),
+                res['sub_cardboard'],
+                res['sub_tape'] + res['sub_labels'],
+                res['cat4_inbound'],
+                res['cat5_waste'],
+                outbound_val,
+                res['cat1_product'],
+                res['cat1_packaging'],
+                res['cat4_inbound'] + res['cat5_waste'] + outbound_val
+            ],
+            color="rgba(16, 185, 129, 0.22)"
+        )
+    )])
+    fig_sankey.update_layout(
+        height=340,
+        margin=dict(t=15, b=15, l=15, r=15),
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#F9FAFB", size=12)
+    )
+    st.plotly_chart(fig_sankey, use_container_width=True)
+
+    st.divider()
+
+    # --- DUAL CHARTS: OPERATIONAL HOTSPOTS & VARIANT SCALING ---
     chart_col1, chart_col2 = st.columns(2)
 
-    df_audit = pd.DataFrame({
-        "Scope 3 Category": [
-            "Cat. 1: Product (Beer & Glass)",
-            "Cat. 1: Packaging Materials",
-            "Cat. 4: Inbound Freight (HGV)",
-            "Cat. 5: Operational Waste",
-            "Cat. 9: Outbound Freight (DHL)"
-        ],
-        "Emissions (kg CO2e)": [
-            res['cat1_product'],
-            res['cat1_packaging'],
-            res['cat4_inbound'],
-            res['cat5_waste'],
-            res['cat9_outbound']
-        ]
-    })
-
     with chart_col1:
-        st.subheader("1. Full Value-Chain Split")
-        fig_total = px.pie(
-            df_audit,
-            names="Scope 3 Category",
-            values="Emissions (kg CO2e)",
-            hole=0.48,
-            color_discrete_sequence=px.colors.sequential.Tealgrn
-        )
-        fig_total.update_traces(textposition="inside", textinfo="percent")
-        fig_total.update_layout(margin=dict(t=10, b=10, l=10, r=10), legend=dict(orientation="h", y=-0.15))
-        st.plotly_chart(fig_total, use_container_width=True)
-
-    with chart_col2:
-        st.subheader("2. Operational & Packaging Hotspot")
+        st.subheader("2. Controllable Operational Hotspots")
         df_ops = pd.DataFrame({
             "Operational Driver": [
                 "Corrugated Box & Inserts",
@@ -268,23 +334,77 @@ with tab1:
             orientation="h",
             text_auto=".4f",
             color="kg CO2e",
-            color_continuous_scale="Teal"
+            color_continuous_scale="Emrld"
         )
         fig_ops.update_layout(
             margin=dict(t=10, b=10, l=10, r=10),
             yaxis=dict(autorange="reversed"),
-            coloraxis_showscale=False
+            coloraxis_showscale=False,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)"
         )
         st.plotly_chart(fig_ops, use_container_width=True)
 
+    with chart_col2:
+        st.subheader("3. Batch Size Efficiency (Ops CO₂e / Bottle)")
+        comp_rows = []
+        for v in ["6-bottle", "12-bottle", "18-bottle"]:
+            r = calculate_full_scope3_pcf(v, custom_distance, enable_gogreen, bottle_system)
+            comp_rows.append({
+                "Carton Size": v.upper(),
+                "Ops Emissions per Bottle (kg CO₂e)": r["ops_per_bottle"],
+                "Highlight": "Selected" if v == order_type else "Alternative"
+            })
+        df_comp = pd.DataFrame(comp_rows)
+        fig_comp = px.bar(
+            df_comp,
+            x="Carton Size",
+            y="Ops Emissions per Bottle (kg CO₂e)",
+            text_auto=".4f",
+            color="Highlight",
+            color_discrete_map={"Selected": "#10B981", "Alternative": "#374151"}
+        )
+        fig_comp.update_layout(
+            margin=dict(t=10, b=10, l=10, r=10),
+            showlegend=False,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
+        st.plotly_chart(fig_comp, use_container_width=True)
+
     st.subheader("CSRD ESRS E1 Audit Breakdown")
-    
-    # Render with centered, auto-width HTML table
-    st.markdown(df_audit.to_html(index=False, classes="centered-audit-table", float_format=lambda x: f"{x:.4f}"), unsafe_allow_html=True)
+    df_audit = pd.DataFrame({
+        "Scope 3 Category": [
+            "Cat. 1: Product (Beer & Glass)",
+            "Cat. 1: Packaging Materials",
+            "Cat. 4: Inbound Freight (HGV)",
+            "Cat. 5: Operational Waste",
+            "Cat. 9: Outbound Freight (DHL)"
+        ],
+        "Emissions (kg CO2e)": [
+            res['cat1_product'],
+            res['cat1_packaging'],
+            res['cat4_inbound'],
+            res['cat5_waste'],
+            res['cat9_outbound']
+        ],
+        "Share of Total (%)": [
+            f"{(res['cat1_product'] / res['total_co2e']) * 100:.2f}%",
+            f"{(res['cat1_packaging'] / res['total_co2e']) * 100:.2f}%",
+            f"{(res['cat4_inbound'] / res['total_co2e']) * 100:.2f}%",
+            f"{(res['cat5_waste'] / res['total_co2e']) * 100:.2f}%",
+            f"{(res['cat9_outbound'] / res['total_co2e']) * 100:.2f}%"
+        ]
+    })
+
+    st.markdown(
+        df_audit.to_html(index=False, classes="centered-audit-table", float_format=lambda x: f"{x:.4f}"),
+        unsafe_allow_html=True
+    )
 
     csv_data = df_audit.to_csv(index=False).encode("utf-8")
     st.download_button(
-        label="⬇️ Download CSRD Audit Report (CSV)",
+        label="⬇️ Download CSRD Audit Ledger (CSV)",
         data=csv_data,
         file_name=f"scope3_pcf_{order_type}_audit.csv",
         mime="text/csv",
@@ -297,7 +417,7 @@ with tab1:
 with tab2:
     st.subheader("End-to-End ISO 14067 & GHG Protocol Engineering Workflow")
     st.markdown(
-        "This model was engineered from bottom-up **primary operational data** collected directly on the warehouse floor, "
+        "Engineered from bottom-up **primary operational data** collected directly on the warehouse floor, "
         "following the four-phase Life Cycle Assessment (LCA) framework:"
     )
 
@@ -305,7 +425,7 @@ with tab2:
     with p1:
         st.info("### 1. Goal & Scope\n**System Boundary:** Cradle-to-Customer.\n\n**Functional Unit:** 1 fulfilled e-commerce order (6, 12, or 18 × 0.5L bottles) aligned with **GHG Protocol Scope 3**.")
     with p2:
-        st.info("### 2. Primary LCI Data\n**Empirical Collection:** Direct physical dimensioning of cartons and digital scale gravimetric testing of tape rolls (183g gross − 32g core = **151g net PP**).")
+        st.info("### 2. Primary LCI Data\n**Empirical Collection:** Physical dimensioning of cartons and digital scale gravimetric testing of tape rolls (183g gross − 32g core = **151g net PP**).")
     with p3:
         st.info("### 3. Secondary EF Mapping\n**German LCI Databases:** Activity mass & tonne-kilometers mapped to verified German factors (**UBA ProBas**, **VDW**, and **Ecoinvent**).")
     with p4:
@@ -358,6 +478,5 @@ with tab3:
         {"Parameter": "Commercial Packing Waste Incineration", "Scope 3 Cat.": "Cat. 5", "Value": PROBAS_WASTE_INCINERATION_EF, "Unit": "kg CO₂e / kg", "Source": "UBA ProBas"},
         {"Parameter": "Outbound Parcel Delivery (DHL GoGreen)", "Scope 3 Cat.": "Cat. 9", "Value": DHL_GOGREEN_NET_EF, "Unit": "kg CO₂e / order", "Source": "DHL GoGreen Certified"}
     ])
-    
-    # Render with centered, auto-width HTML table
+
     st.markdown(ef_table.to_html(index=False, classes="centered-audit-table"), unsafe_allow_html=True)
