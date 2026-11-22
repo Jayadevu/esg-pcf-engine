@@ -78,17 +78,22 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- HEADER & HERO TAKEAWAY ---
+# --- HEADER & CASE STUDY CONTEXT BANNER ---
 st.title("🌱 Scope 3 Logistics & Packaging PCF Engine")
 st.caption("ISO 14067 & GHG Protocol (Categories 1, 4, 5, 9) • Cradle-to-Customer Carbon Intelligence for Beverage Fulfillment")
 
 st.markdown("""
 <div class="hero-banner">
-    <h3>Executive Summary & Engineering Highlights</h3>
+    <h3>📦 Case Study Context: German E-Commerce Beverage Fulfillment</h3>
+    <p style="margin-bottom: 12px;">
+        <strong>The Challenge:</strong> Beverage distributors under <strong>CSRD / ESRS E1</strong> mandates must report Scope 3 emissions, yet generic spend-based estimates mask real operational hotspots. This engine models a live regional fulfillment workflow—from inbound brewery freight (Coburg, 75 km) through warehouse pick-and-pack (6-, 12-, and 18-bottle cartons) to last-mile <strong>DHL GoGreen</strong> delivery.<br>
+        <strong>The Goal:</strong> Separate direct, controllable warehouse packaging emissions from circular product footprints (Germany's <em>Pfand / Mehrweg</em> glass pool) to guide data-driven decarbonization.
+    </p>
+    <hr style="border-color: rgba(52, 211, 153, 0.3); margin: 10px 0;">
     <p>
-        • <strong>Bottom-Up Primary LCI:</strong> Built from direct warehouse carton dimensioning and gravimetric tape audits (151g net PP film/roll) rather than generic spend-based estimates.<br>
-        • <strong>German Pfand (Mehrweg) Circular Modeling:</strong> Dynamically amortizes container glass manufacturing across 30 reuse rotations vs. single-use (<em>Einweg</em>) baselines.<br>
-        • <strong>CSRD / ESRS E1 Audit-Ready:</strong> Maps operational drivers directly to GHG Protocol Scope 3 categories with one-click audit ledger exports.
+        • <strong>Bottom-Up Primary LCI:</strong> Built from direct physical carton dimensioning and gravimetric tape roll audits (151g net PP film/roll).<br>
+        • <strong>Circular Pfand Modeling:</strong> Amortizes container glass manufacturing across 30 reuse rotations vs. single-use (<em>Einweg</em>) baselines.<br>
+        • <strong>Audit-Ready Output:</strong> Maps activity data directly to GHG Protocol Scope 3 (Cat. 1, 4, 5, 9) with one-click CSV ledger exports.
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -246,7 +251,7 @@ with tab1:
 
     st.divider()
 
-    # --- SANKEY FLOW DIAGRAM (Visualizes entire Scope 3 system at a glance) ---
+    # --- SANKEY FLOW DIAGRAM ---
     st.subheader("1. Cradle-to-Customer Carbon Flow (Sankey Allocation)")
     
     sankey_labels = [
@@ -263,7 +268,6 @@ with tab1:
         f"Total Order PCF ({res['total_co2e']} kg)" # 10
     ]
 
-    # Small floor value (0.0001) ensures zero-emission nodes like GoGreen still render cleanly
     outbound_val = max(res['cat9_outbound'], 0.0001)
 
     fig_sankey = go.Figure(data=[go.Sankey(
