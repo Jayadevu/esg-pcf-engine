@@ -310,7 +310,7 @@ with tab1:
 
     st.divider()
 
-    # --- DUAL CHARTS: OPERATIONAL HOTSPOTS & VARIANT SCALING ---
+    # --- DUAL CHARTS ---
     chart_col1, chart_col2 = st.columns(2)
 
     with chart_col1:
@@ -434,6 +434,20 @@ with tab2:
         st.info("### 3. Secondary EF Mapping\n**German LCI Databases:** Activity mass & tonne-kilometers mapped to verified German factors (**UBA ProBas**, **VDW**, and **Ecoinvent**).")
     with p4:
         st.info("### 4. Impact Aggregation\n**CSRD / ESRS E1 Output:** Automated category aggregation (Cat. 1, 4, 5, 9), hotspot identification, and audit-ready CSV reporting.")
+
+    st.divider()
+
+    # --- NEW: CSRD / ESRS E1 REGULATORY MAPPING & STRATEGIC RECOMMENDATIONS ---
+    st.subheader("⚖️ CSRD / ESRS E1 Compliance Mapping & Strategic Recommendations")
+    st.markdown("""
+    Under the **Corporate Sustainability Reporting Directive (CSRD)** and European Standard **ESRS E1 (Climate Change)**, companies must transparently report greenhouse gas emissions across their value chain. This tool maps directly to mandatory disclosures:
+    - **ESRS E1-6 (Scope 3 Emissions):** Automatically segregates and calculates gross upstream and downstream emissions across Categories 1 (Purchased Goods), 4 (Upstream Transport), 5 (Operational Waste), and 9 (Downstream Distribution).
+    
+    ### 🎯 Actionable Decarbonization Recommendations for Leadership:
+    1. **Prioritize Supplier Engagement (Cat. 1):** Because container glass and brewing account for the bulk of upstream intensity, distributors must partner with regional breweries utilizing biogas/green hydrogen rather than focusing solely on warehouse tape or box weights.
+    2. **Enforce Circular *Mehrweg* Pools:** Leveraging Germany's returnable glass pool amortizes container manufacturing across 30 cycles, preventing massive carbon inflation compared to single-use (*Einweg*) systems.
+    3. **Optimize Carton Density:** Scaling from 6-bottle to 18-bottle configurations significantly reduces packaging emissions per bottle delivered, optimizing transport efficiency (tkm).
+    """)
 
     st.divider()
 
